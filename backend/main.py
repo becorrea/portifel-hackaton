@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
+from api import statements, portfolio, dividends
+from modules.market.scheduler import scheduler
 
 app = FastAPI(title="Portifel API", version="0.1.0")
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -13,10 +14,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(statements.router)
+app.include_router(portfolio.router)
+app.include_router(dividends.router)
+
 @app.get("/health")
 def health():
-    """Health check endpoint."""
     return {"status": "ok"}
+
+@app.on_event("startup")
+def startup_event():
+    scheduler.start()
+
+@app.on_event("shutdown")
+def shutdown_event():
+    scheduler.stop()
 
 if __name__ == "__main__":
     import uvicorn
