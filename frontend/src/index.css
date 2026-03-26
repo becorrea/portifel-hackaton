@@ -2,8 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-base: #0D0D0F;
+  --bg-surface: #16181D;
+  --bg-surface-hover: #1A1C22;
+  --border: #1E2028;
+  --accent-green: #00C896;
+  --accent-red: #FF4D4D;
+  --accent-blue: #4B9FFF;
+  --accent-purple: #A78BFA;
+  --accent-yellow: #F59E0B;
+  --text-primary: #EAEAEA;
+  --text-secondary: #6B7280;
+  --font-base: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-base);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Skeleton pulse animation */
+@keyframes pulse-skeleton {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.skeleton {
+  animation: pulse-skeleton 1.8s ease-in-out infinite;
+  background-color: var(--bg-surface-hover);
+  border-radius: 6px;
 }

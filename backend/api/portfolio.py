@@ -6,16 +6,27 @@ from modules.portfolio.performance import get_portfolio_summary
 router = APIRouter(prefix="/portfolio", tags=["portfolio"])
 
 @router.get("")
-async def get_portfolio(authorization: str = Header(None)):
-    user_id = await get_current_user(authorization)
+async def get_portfolio(authorization: str = Header(None), x_user_id: str = Header(None)):
+    user_id = await get_current_user(authorization, x_user_id)
     summary = await get_portfolio_summary(user_id)
     positions = await get_current_positions(user_id)
 
     return {"summary": summary, "positions": list(positions.values())}
 
+@router.post("/refresh")
+async def refresh_market_data(authorization: str = Header(None), x_user_id: str = Header(None)):
+    """Trigger an immediate market data refresh for the current user's tickers."""
+    user_id = await get_current_user(authorization, x_user_id)
+    try:
+        from modules.market.updater import refresh_market_data as do_refresh
+        await do_refresh(user_id=user_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Refresh failed: {e}")
+    return {"message": "Market data refreshed"}
+
 @router.get("/{ticker}")
-async def get_asset_detail(ticker: str, authorization: str = Header(None)):
-    user_id = await get_current_user(authorization)
+async def get_asset_detail(ticker: str, authorization: str = Header(None), x_user_id: str = Header(None)):
+    user_id = await get_current_user(authorization, x_user_id)
     positions = await get_current_positions(user_id)
 
     if ticker not in positions:

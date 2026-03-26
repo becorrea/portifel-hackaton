@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS transactions (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   statement_id UUID REFERENCES statements(id) ON DELETE SET NULL,
   ticker TEXT NOT NULL,
-  asset_type TEXT NOT NULL CHECK (asset_type IN ('stock', 'fii', 'bdr', 'fixed_income', 'crypto', 'international')),
-  operation TEXT NOT NULL CHECK (operation IN ('buy', 'sell', 'income', 'split', 'bonus')),
+  asset_type TEXT NOT NULL CHECK (asset_type IN ('stock', 'fii', 'bdr', 'fixed_income', 'crypto', 'international', 'fund')),
+  operation TEXT NOT NULL CHECK (operation IN ('buy', 'sell', 'income', 'split', 'bonus', 'dividend', 'application', 'redemption')),
   quantity NUMERIC NOT NULL,
   unit_price NUMERIC NOT NULL,
   total_value NUMERIC NOT NULL,
@@ -48,7 +48,8 @@ CREATE TABLE IF NOT EXISTS dividends (
   value_per_unit NUMERIC NOT NULL,
   ex_date DATE,
   payment_date DATE,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  UNIQUE(ticker, ex_date)
 );
 
 -- Row Level Security (RLS)

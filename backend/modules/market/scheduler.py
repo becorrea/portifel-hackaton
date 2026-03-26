@@ -42,11 +42,11 @@ class MarketDataScheduler:
             logger.error(f"Polling error: {e}")
 
     async def _async_poll(self):
-        try:
-            result = self.supabase.table("transactions").select("DISTINCT ticker").execute()
-            tickers = [row["ticker"] for row in result.data]
-            logger.info(f"Polling {len(tickers)} tickers")
-        except Exception as e:
-            logger.error(f"Error: {e}")
+        from modules.market.updater import refresh_market_data
+        await refresh_market_data(supabase=self.supabase)
+
+    async def refresh_now(self, user_id: str = None):
+        from modules.market.updater import refresh_market_data
+        await refresh_market_data(user_id=user_id, supabase=self.supabase)
 
 scheduler = MarketDataScheduler()

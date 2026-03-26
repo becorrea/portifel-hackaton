@@ -15,8 +15,18 @@ async def verify_token(token: str) -> str:
     except Exception as e:
         raise InvalidTokenError(f"Invalid token: {str(e)}")
 
-async def get_current_user(authorization: str) -> str:
-    """Extract and verify token from Authorization header."""
+async def get_current_user(authorization: str = None, x_user_id: str = None) -> str:
+    """Extract user_id from Authorization header or X-User-ID header.
+
+    Priority:
+    1. X-User-ID header (development/testing)
+    2. Authorization Bearer token (production)
+    """
+    # Development mode: use X-User-ID header
+    if x_user_id:
+        return x_user_id
+
+    # Production mode: use JWT token
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid auth header")
     token = authorization.split(" ")[1]

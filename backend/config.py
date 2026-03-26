@@ -8,11 +8,11 @@ class Settings(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_SERVICE_KEY: str
 
-    # Gemini
-    GEMINI_API_KEY: str
+    # AI APIs
+    OPENAI_API_KEY: str = ""
 
     # Market Data
-    BRAPI_TOKEN: str
+    BRAPI_TOKEN: str = ""
     MARKET_POLL_INTERVAL_HOURS: int = 24
 
     # API

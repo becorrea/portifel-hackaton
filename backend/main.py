@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from api import statements, portfolio, dividends
-from modules.market.scheduler import scheduler
 
 app = FastAPI(title="Portifel API", version="0.1.0")
 
@@ -22,13 +21,19 @@ app.include_router(dividends.router)
 def health():
     return {"status": "ok"}
 
-@app.on_event("startup")
-def startup_event():
-    scheduler.start()
+# Try to start scheduler if available
+try:
+    from modules.market.scheduler import scheduler
 
-@app.on_event("shutdown")
-def shutdown_event():
-    scheduler.stop()
+    @app.on_event("startup")
+    def startup_event():
+        scheduler.start()
+
+    @app.on_event("shutdown")
+    def shutdown_event():
+        scheduler.stop()
+except ImportError:
+    print("Warning: APScheduler not available. Market data polling disabled.")
 
 if __name__ == "__main__":
     import uvicorn
